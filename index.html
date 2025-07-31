@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHO Oral Health Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better mobile experience */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Hide number input spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .cpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .enamel-grid-upper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .enamel-grid-upper {
+                grid-template-columns: repeat(8, 1fr);
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto max-w-4xl p-4">
+        <!-- Header -->
+        <header class="bg-white shadow-md rounded-lg p-4 mb-4">
+            <h1 class="text-2xl font-bold text-center text-blue-600">WHO Oral Health Assessment Form</h1>
+            <p class="text-center text-gray-500 text-sm mt-1">Created by Dr. Shubham Trivedi, Department of Public Health Dentistry, GDCH Ahmedabad, with Gemini.</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md rounded-lg p-2 mb-4 overflow-x-auto whitespace-nowrap">
+            <div id="nav-buttons" class="flex space-x-1 sm:space-x-2">
+                <button class="nav-btn bg-blue-500 text-white py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="general">General</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="extra-oral">Extra-oral</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="tmj">TMJ</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="oral-mucosa">Mucosa</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="enamel">Enamel</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="cpi-loa">CPI/LOA</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="dentition">Dentition</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="prosthesis">Prosthesis</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="anomalies">DAI</button>
+                <button class="nav-btn bg-gray-200 text-gray-700 py-2 px-3 text-xs sm:text-sm rounded-md font-medium" data-section="summary">Summary</button>
+            </div>
+        </nav>
+
+        <form id="assessment-form" class="bg-white shadow-md rounded-lg p-6">
+            <!-- General Information Section -->
+            <section id="general" class="form-section active">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">1. Identification & General Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="date" id="exam-date" class="hidden">
+                    <div>
+                        <label for="id-number" class="block text-sm font-medium text-gray-700">Identification Number</label>
+                        <input type="text" id="id-number" placeholder="e.g., 0001" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Name (Optional)</label>
+                        <input type="text" id="name" placeholder="Family Name, First Name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                        <input type="date" id="dob" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                     <div>
+                        <label for="age" class="block text-sm font-medium text-gray-700">Age (Years)</label>
+                        <input type="number" id="age" placeholder="Enter or auto-calc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="sex" class="block text-sm font-medium text-gray-700">Sex</label>
+                        <select id="sex" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="9">Select...</option>
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="ethnic-group" class="block text-sm font-medium text-gray-700">Ethnic Group</label>
+                        <input type="text" id="ethnic-group" placeholder="e.g., Caucasian" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                     <div>
+                        <label for="occupation" class="block text-sm font-medium text-gray-700">Occupation</label>
+                        <input type="text" id="occupation" placeholder="e.g., Teacher" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="geo-location" class="block text-sm font-medium text-gray-700">Geographical Location</label>
+                        <input type="text" id="geo-location" placeholder="e.g., Ahmedabad" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="location-type" class="block text-sm font-medium text-gray-700">Location Type</label>
+                        <select id="location-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="9">Select...</option>
+                            <option value="1">Urban</option>
+                            <option value="2">Peri-urban</option>
+                            <option value="3">Rural</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="other-data" class="block text-sm font-medium text-gray-700">Other Data</label>
+                        <input type="text" id="other-data" placeholder="Any other info" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Extra-oral Examination Section -->
+            <section id="extra-oral" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">2. Extra-oral Examination</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="extra-oral-condition" class="block text-sm font-medium text-gray-700">Condition</label>
+                        <select id="extra-oral-condition" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="0">Normal</option>
+                            <option value="1">Ulceration, sores</option>
+                            <option value="2">Erosions</option>
+                            <option value="3">Fissures</option>
+                            <option value="4">Cancrum oris</option>
+                            <option value="5">Enlarged lymph nodes</option>
+                            <option value="6">Any other abnormalities</option>
+                            <option value="9">Not recorded</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Temporomandibular joint (TMJ) Section -->
+            <section id="tmj" class="form-section">
+                 <h2 class="text-xl font-semibold mb-4 border-b pb-2">3. Temporomandibular Joint (TMJ)</h2>
+                 <div class="space-y-4">
+                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Symptoms Present?</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center"><input type="radio" name="tmj-symptoms-present" value="1" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> <span class="ml-2">Yes</span></label>
+                            <label class="flex items-center"><input type="radio" name="tmj-symptoms-present" value="0" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> <span class="ml-2">No</span></label>
+                            <label class="flex items-center"><input type="radio" name="tmj-symptoms-present" value="9" class="h-4 w-4 text-blue-600 focus:ring-blue-500" checked> <span class="ml-2">Not Recorded</span></label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Signs</label>
+                        <div class="mt-2 space-y-2">
+                            <div class="flex items-center">
+                                <input id="tmj-clicking" name="tmj-signs" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <label for="tmj-clicking" class="ml-3 block text-sm text-gray-900">Clicking</label>
+                            </div>
+                             <div class="flex items-center">
+                                <input id="tmj-tenderness" name="tmj-signs" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <label for="tmj-tenderness" class="ml-3 block text-sm text-gray-900">Tenderness</label>
+                            </div>
+                             <div class="flex items-center">
+                                <input id="tmj-reduced-opening" name="tmj-signs" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <label for="tmj-reduced-opening" class="ml-3 block text-sm text-gray-900">Reduced jaw opening (&lt;30mm)</label>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <!-- Oral Mucosa Section -->
+            <section id="oral-mucosa" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">4. Oral Mucosa</h2>
+                <div class="space-y-6">
+                    <!-- Lesion 1 -->
+                    <div class="p-4 border rounded-lg">
+                        <h3 class="font-semibold mb-2">Lesion 1</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="oral-mucosa-condition-1" class="block text-sm font-medium text-gray-700">Condition</label>
+                                <select id="oral-mucosa-condition-1" data-lesion="1" class="oral-mucosa-condition-select mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Normal / No Lesion</option><option value="1">Malignant tumour</option><option value="2">Leukoplakia</option><option value="3">Lichen planus</option><option value="4">Ulceration</option><option value="5">ANUG</option><option value="6">Candidiasis</option><option value="7">Abscess</option><option value="8">Other</option><option value="9">Not recorded</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="oral-mucosa-location-1" class="block text-sm font-medium text-gray-700">Location</label>
+                                <select id="oral-mucosa-location-1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">N/A</option><option value="1">Labial mucosa/sulcus (upper)</option><option value="2">Labial mucosa/sulcus (lower)</option><option value="3">Commissures</option><option value="4">Buccal mucosa</option><option value="5">Sulcus</option><option value="6">Tongue</option><option value="7">Floor of mouth</option><option value="8">Hard/soft palate</option><option value="9">Alveolar ridges/gingiva</option>
+                                </select>
+                            </div>
+                            <div id="oral-mucosa-other-container-1" class="md:col-span-2 hidden">
+                                <label for="oral-mucosa-other-1" class="block text-sm font-medium text-gray-700">Specify Other</label>
+                                <input type="text" id="oral-mucosa-other-1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Lesion 2 -->
+                    <div class="p-4 border rounded-lg">
+                        <h3 class="font-semibold mb-2">Lesion 2</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div>
+                                <label for="oral-mucosa-condition-2" class="block text-sm font-medium text-gray-700">Condition</label>
+                                <select id="oral-mucosa-condition-2" data-lesion="2" class="oral-mucosa-condition-select mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">No Lesion</option><option value="1">Malignant tumour</option><option value="2">Leukoplakia</option><option value="3">Lichen planus</option><option value="4">Ulceration</option><option value="5">ANUG</option><option value="6">Candidiasis</option><option value="7">Abscess</option><option value="8">Other</option><option value="9">Not recorded</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="oral-mucosa-location-2" class="block text-sm font-medium text-gray-700">Location</label>
+                                <select id="oral-mucosa-location-2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">N/A</option><option value="1">Labial mucosa/sulcus (upper)</option><option value="2">Labial mucosa/sulcus (lower)</option><option value="3">Commissures</option><option value="4">Buccal mucosa</option><option value="5">Sulcus</option><option value="6">Tongue</option><option value="7">Floor of mouth</option><option value="8">Hard/soft palate</option><option value="9">Alveolar ridges/gingiva</option>
+                                </select>
+                            </div>
+                            <div id="oral-mucosa-other-container-2" class="md:col-span-2 hidden">
+                                <label for="oral-mucosa-other-2" class="block text-sm font-medium text-gray-700">Specify Other</label>
+                                <input type="text" id="oral-mucosa-other-2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Lesion 3 -->
+                    <div class="p-4 border rounded-lg">
+                        <h3 class="font-semibold mb-2">Lesion 3</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div>
+                                <label for="oral-mucosa-condition-3" class="block text-sm font-medium text-gray-700">Condition</label>
+                                <select id="oral-mucosa-condition-3" data-lesion="3" class="oral-mucosa-condition-select mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">No Lesion</option><option value="1">Malignant tumour</option><option value="2">Leukoplakia</option><option value="3">Lichen planus</option><option value="4">Ulceration</option><option value="5">ANUG</option><option value="6">Candidiasis</option><option value="7">Abscess</option><option value="8">Other</option><option value="9">Not recorded</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="oral-mucosa-location-3" class="block text-sm font-medium text-gray-700">Location</label>
+                                <select id="oral-mucosa-location-3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">N/A</option><option value="1">Labial mucosa/sulcus (upper)</option><option value="2">Labial mucosa/sulcus (lower)</option><option value="3">Commissures</option><option value="4">Buccal mucosa</option><option value="5">Sulcus</option><option value="6">Tongue</option><option value="7">Floor of mouth</option><option value="8">Hard/soft palate</option><option value="9">Alveolar ridges/gingiva</option>
+                                </select>
+                            </div>
+                            <div id="oral-mucosa-other-container-3" class="md:col-span-2 hidden">
+                                <label for="oral-mucosa-other-3" class="block text-sm font-medium text-gray-700">Specify Other</label>
+                                <input type="text" id="oral-mucosa-other-3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enamel Opacities/Hypoplasia and Fluorosis Section -->
+            <section id="enamel" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">5. Enamel Health</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Enamel Opacities/Hypoplasia -->
+                    <div class="space-y-4 md:col-span-2">
+                        <h3 class="font-semibold text-lg">Enamel Opacities/Hypoplasia (Tooth-wise)</h3>
+                        <p class="text-xs text-gray-500">Record condition for each tooth.</p>
+                        <div class="space-y-2">
+                            <label class="font-medium text-sm">Upper Arch (14 to 24)</label>
+                            <div id="enamel-hypoplasia-upper" class="enamel-grid-upper text-xs"></div>
+                        </div>
+                         <div class="space-y-2">
+                            <label class="font-medium text-sm">Lower Arch (36, 46)</label>
+                            <div id="enamel-hypoplasia-lower" class="grid grid-cols-2 gap-4 text-xs"></div>
+                        </div>
+                    </div>
+                    <!-- Dental Fluorosis -->
+                    <div class="space-y-4 md:col-span-2">
+                        <h3 class="font-semibold text-lg">Dental Fluorosis</h3>
+                        <div>
+                           <label for="dental-fluorosis" class="block text-sm font-medium text-gray-700">Dean's Index (Overall)</label>
+                           <select id="dental-fluorosis" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                               <option value="9">Not recorded</option><option value="0">Normal</option><option value="1">Questionable</option><option value="2">Very mild</option><option value="3">Mild</option><option value="4">Moderate</option><option value="5">Severe</option>
+                           </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CPI/LOA Section -->
+            <section id="cpi-loa" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">6. CPI & Loss of Attachment</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">Community Periodontal Index (CPI)</h3>
+                        <div class="cpi-grid">
+                            <div class="text-center font-medium">17/16</div><div class="text-center font-medium">11</div><div class="text-center font-medium">26/27</div>
+                            <div class="text-center font-medium">47/46</div><div class="text-center font-medium">31</div><div class="text-center font-medium">36/37</div>
+                            <input type="text" id="cpi-1" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="cpi-2" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="cpi-3" class="w-full text-center rounded border-gray-300 p-1">
+                            <input type="text" id="cpi-4" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="cpi-5" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="cpi-6" class="w-full text-center rounded border-gray-300 p-1">
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="font-semibold text-lg mb-2">Loss of Attachment (LOA)</h3>
+                        <div class="cpi-grid">
+                            <div class="text-center font-medium">17/16</div><div class="text-center font-medium">11</div><div class="text-center font-medium">26/27</div>
+                            <div class="text-center font-medium">47/46</div><div class="text-center font-medium">31</div><div class="text-center font-medium">36/37</div>
+                            <input type="text" id="loa-1" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="loa-2" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="loa-3" class="w-full text-center rounded border-gray-300 p-1">
+                            <input type="text" id="loa-4" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="loa-5" class="w-full text-center rounded border-gray-300 p-1"><input type="text" id="loa-6" class="w-full text-center rounded border-gray-300 p-1">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dentition Status Section -->
+            <section id="dentition" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">7. Dentition Status</h2>
+                <p class="text-sm text-gray-600 mb-4">Record status for each tooth. Blank fields will be coded as '080' (Sound).</p>
+                <div class="mb-6">
+                    <h3 class="font-medium text-center mb-2">Upper Arch</h3>
+                    <div class="flex justify-center gap-4">
+                        <div id="upper-right-quadrant" class="grid grid-cols-8 gap-1 text-center text-xs"></div>
+                        <div id="upper-left-quadrant" class="grid grid-cols-8 gap-1 text-center text-xs"></div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-medium text-center mb-2">Lower Arch</h3>
+                    <div class="flex justify-center gap-4">
+                        <div id="lower-right-quadrant" class="grid grid-cols-8 gap-1 text-center text-xs"></div>
+                        <div id="lower-left-quadrant" class="grid grid-cols-8 gap-1 text-center text-xs"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prosthesis Section -->
+            <section id="prosthesis" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">8. Prosthetic Status & Need</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-lg">Prosthetic Status</h3>
+                        <div>
+                           <label for="prosthesis-status-upper" class="block text-sm font-medium text-gray-700">Upper Arch</label>
+                           <select id="prosthesis-status-upper" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                               <option value="9">Not recorded</option><option value="0">No prosthesis</option><option value="1">Bridge</option><option value="2">More than one bridge</option><option value="3">Partial denture</option><option value="4">Bridge & Partial</option><option value="5">Full removable</option>
+                           </select>
+                        </div>
+                        <div>
+                           <label for="prosthesis-status-lower" class="block text-sm font-medium text-gray-700">Lower Arch</label>
+                           <select id="prosthesis-status-lower" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                               <option value="9">Not recorded</option><option value="0">No prosthesis</option><option value="1">Bridge</option><option value="2">More than one bridge</option><option value="3">Partial denture</option><option value="4">Bridge & Partial</option><option value="5">Full removable</option>
+                           </select>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-lg">Prosthetic Need</h3>
+                        <div>
+                           <label for="prosthesis-need-upper" class="block text-sm font-medium text-gray-700">Upper Arch</label>
+                           <select id="prosthesis-need-upper" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                               <option value="9">Not recorded</option><option value="0">No prosthesis needed</option><option value="1">Need for one-unit</option><option value="2">Need for multi-unit</option><option value="3">Need for combination</option><option value="4">Need for full</option>
+                           </select>
+                        </div>
+                         <div>
+                           <label for="prosthesis-need-lower" class="block text-sm font-medium text-gray-700">Lower Arch</label>
+                           <select id="prosthesis-need-lower" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                               <option value="9">Not recorded</option><option value="0">No prosthesis needed</option><option value="1">Need for one-unit</option><option value="2">Need for multi-unit</option><option value="3">Need for combination</option><option value="4">Need for full</option>
+                           </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dentofacial Anomalies Section -->
+            <section id="anomalies" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">9. Dental Aesthetic Index (DAI)</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label for="dai-missing-teeth" class="block text-sm font-medium text-gray-700">Missing Teeth (Ant.)</label>
+                        <input type="number" id="dai-missing-teeth" placeholder="Count" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="dai-crowding" class="block text-sm font-medium text-gray-700">Crowding (Incisal)</label>
+                        <select id="dai-crowding" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="0">No crowding</option><option value="1">1 segment</option><option value="2">2 segments</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dai-spacing" class="block text-sm font-medium text-gray-700">Spacing (Incisal)</label>
+                        <select id="dai-spacing" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="0">No spacing</option><option value="1">1 segment</option><option value="2">2 segments</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dai-diastema" class="block text-sm font-medium text-gray-700">Diastema (mm)</label>
+                        <input type="number" id="dai-diastema" placeholder="mm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="dai-irregularity-upper" class="block text-sm font-medium text-gray-700">Irregularity (Upper, mm)</label>
+                        <input type="number" id="dai-irregularity-upper" placeholder="mm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                     <div>
+                        <label for="dai-irregularity-lower" class="block text-sm font-medium text-gray-700">Irregularity (Lower, mm)</label>
+                        <input type="number" id="dai-irregularity-lower" placeholder="mm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="dai-overjet-max" class="block text-sm font-medium text-gray-700">Overjet (Maxillary, mm)</label>
+                        <input type="number" id="dai-overjet-max" placeholder="mm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="dai-overjet-mand" class="block text-sm font-medium text-gray-700">Overjet (Mandibular, mm)</label>
+                        <input type="number" id="dai-overjet-mand" placeholder="mm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="dai-open-bite" class="block text-sm font-medium text-gray-700">Vertical Open Bite (mm)</label>
+                        <input type="number" id="dai-open-bite" placeholder="mm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div class="lg:col-span-3">
+                        <label for="dai-molar-relation" class="block text-sm font-medium text-gray-700">AP Molar Relation</label>
+                        <select id="dai-molar-relation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="0">Normal</option><option value="1">Half cusp</option><option value="2">Full cusp</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Summary and Actions Section -->
+            <section id="summary" class="form-section">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">10. Summary & Actions</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700">Additional Notes</label>
+                        <textarea id="notes" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Enter any other relevant observations..."></textarea>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-lg font-medium">Batch Export</p>
+                        <p class="text-sm text-gray-600 mb-2">
+                            <span id="batch-count" class="font-bold text-blue-600">0</span> Patients in Current Batch
+                        </p>
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                             <button id="add-to-batch-btn" type="button" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">Add Patient to Batch</button>
+                             <button id="clear-batch-btn" type="button" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">Clear Batch</button>
+                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                        <button id="save-btn" type="button" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">Save Current Form</button>
+                        <button id="load-btn" type="button" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">Load Last Saved</button>
+                        <button id="clear-btn" type="button" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">Clear Current Form</button>
+                        <button id="export-csv-btn" type="button" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">Export Batch to CSV</button>
+                    </div>
+                </div>
+            </section>
+
+        </form>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0">
+            <p id="toast-message"></p>
+        </div>
+
+    </div>
+
+    <!-- App Script -->
+    <script type="module">
+        // --- App Logic ---
+        let patientBatch = [];
+
+        const navButtons = document.getElementById('nav-buttons');
+        const formSections = document.querySelectorAll('.form-section');
+        const dobInput = document.getElementById('dob');
+        const ageInput = document.getElementById('age');
+        const assessmentForm = document.getElementById('assessment-form');
+        
+        // --- Navigation ---
+        navButtons.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const sectionId = e.target.dataset.section;
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('bg-blue-500', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                e.target.classList.add('bg-blue-500', 'text-white');
+                e.target.classList.remove('bg-gray-200', 'text-gray-700');
+                formSections.forEach(section => {
+                    section.classList.toggle('active', section.id === sectionId);
+                });
+            }
+        });
+
+        // --- Chart Generation ---
+        function createDentitionChart() {
+            const upperRight = document.getElementById('upper-right-quadrant');
+            const upperLeft = document.getElementById('upper-left-quadrant');
+            const lowerRight = document.getElementById('lower-right-quadrant');
+            const lowerLeft = document.getElementById('lower-left-quadrant');
+
+            const createToothInput = (n) => `<div><label for="tooth-${n}" class="sr-only">${n}</label><div class="text-center">${n}</div><input type="text" id="tooth-${n}" class="w-full text-center rounded border-gray-300 text-sm p-1 mt-1"></div>`;
+            
+            upperRight.innerHTML = Array.from({length: 8}, (_, i) => 18 - i).map(createToothInput).join('');
+            upperLeft.innerHTML = Array.from({length: 8}, (_, i) => 21 + i).map(createToothInput).join('');
+            lowerRight.innerHTML = Array.from({length: 8}, (_, i) => 48 - i).map(createToothInput).join('');
+            lowerLeft.innerHTML = Array.from({length: 8}, (_, i) => 31 + i).map(createToothInput).join('');
+        }
+
+        function createEnamelHypoplasiaChart() {
+            const upperContainer = document.getElementById('enamel-hypoplasia-upper');
+            const lowerContainer = document.getElementById('enamel-hypoplasia-lower');
+            
+            const createEnamelSelect = (n) => `
+                <div class="text-center">
+                    <label for="hypoplasia-${n}" class="block text-xs font-medium">${n}</label>
+                    <select id="hypoplasia-${n}" class="mt-1 w-full rounded-md border-gray-300 shadow-sm text-xs p-1">
+                        <option value="0">0: Normal</option>
+                        <option value="1">1: Demarcated</option>
+                        <option value="2">2: Diffuse</option>
+                        <option value="3">3: Hypoplasia</option>
+                        <option value="4">4: Other</option>
+                        <option value="5">5: Demarcated+Diffuse</option>
+                        <option value="6">6: Demarcated+Hypo</option>
+                        <option value="7">7: Diffuse+Hypo</option>
+                        <option value="8">8: All three</option>
+                        <option value="9" selected>9: Not recorded</option>
+                    </select>
+                </div>`;
+
+            const upperTeeth = [14, 13, 12, 11, 21, 22, 23, 24];
+            upperContainer.innerHTML = upperTeeth.map(createEnamelSelect).join('');
+
+            const lowerTeeth = [36, 46];
+            lowerContainer.innerHTML = lowerTeeth.map(createEnamelSelect).join('');
+        }
+        
+        // --- Utility Functions ---
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), duration);
+        }
+        
+        function getFormData() {
+            document.querySelectorAll('#dentition input[type="text"]').forEach(input => {
+                if (input.value.trim() === '') input.value = '080';
+            });
+
+            const data = {
+                general: {
+                    examDate: document.getElementById('exam-date').value,
+                    idNumber: document.getElementById('id-number').value,
+                    name: document.getElementById('name').value,
+                    dob: document.getElementById('dob').value,
+                    age: document.getElementById('age').value,
+                    sex: document.getElementById('sex').value,
+                    ethnicGroup: document.getElementById('ethnic-group').value,
+                    occupation: document.getElementById('occupation').value,
+                    geoLocation: document.getElementById('geo-location').value,
+                    locationType: document.getElementById('location-type').value,
+                    otherData: document.getElementById('other-data').value,
+                },
+                extraOral: {
+                    condition: document.getElementById('extra-oral-condition').value,
+                },
+                tmj: {
+                    symptomsPresent: document.querySelector('input[name="tmj-symptoms-present"]:checked').value,
+                    clicking: document.getElementById('tmj-clicking').checked,
+                    tenderness: document.getElementById('tmj-tenderness').checked,
+                    reducedOpening: document.getElementById('tmj-reduced-opening').checked,
+                },
+                oralMucosa: {},
+                enamel: { fluorosis: document.getElementById('dental-fluorosis').value },
+                cpiLoa: {},
+                dentition: {},
+                prosthesis: {
+                    statusUpper: document.getElementById('prosthesis-status-upper').value,
+                    statusLower: document.getElementById('prosthesis-status-lower').value,
+                    needUpper: document.getElementById('prosthesis-need-upper').value,
+                    needLower: document.getElementById('prosthesis-need-lower').value,
+                },
+                anomalies: {
+                    missingTeeth: document.getElementById('dai-missing-teeth').value,
+                    crowding: document.getElementById('dai-crowding').value,
+                    spacing: document.getElementById('dai-spacing').value,
+                    diastema: document.getElementById('dai-diastema').value,
+                    irregularityUpper: document.getElementById('dai-irregularity-upper').value,
+                    irregularityLower: document.getElementById('dai-irregularity-lower').value,
+                    overjetMax: document.getElementById('dai-overjet-max').value,
+                    overjetMand: document.getElementById('dai-overjet-mand').value,
+                    openBite: document.getElementById('dai-open-bite').value,
+                    molarRelation: document.getElementById('dai-molar-relation').value,
+                },
+                summary: {
+                    notes: document.getElementById('notes').value,
+                }
+            };
+            
+            // Collect complex data
+            for(let i = 1; i <= 3; i++) {
+                data.oralMucosa[`lesion${i}_condition`] = document.getElementById(`oral-mucosa-condition-${i}`).value;
+                data.oralMucosa[`lesion${i}_location`] = document.getElementById(`oral-mucosa-location-${i}`).value;
+                data.oralMucosa[`lesion${i}_other`] = document.getElementById(`oral-mucosa-other-${i}`).value;
+            }
+            document.querySelectorAll('#enamel select').forEach(sel => {
+                if (sel.id !== 'dental-fluorosis') {
+                    data.enamel[sel.id] = sel.value;
+                }
+            });
+            document.querySelectorAll('#cpi-loa input').forEach(input => data.cpiLoa[input.id] = input.value);
+            document.querySelectorAll('#dentition input').forEach(input => data.dentition[input.id] = input.value);
+
+            return data;
+        }
+
+        function setFormData(data) {
+            if (!data) return;
+            assessmentForm.reset();
+
+            const simpleFields = { ...data.general, ...data.extraOral, ...data.prosthesis, ...data.anomalies, ...data.summary };
+            simpleFields.fluorosis = data.enamel?.fluorosis;
+            
+            for (const key in simpleFields) {
+                const element = document.getElementById(key) || document.getElementById(`dai-${key}`);
+                if (element && simpleFields[key] !== undefined) element.value = simpleFields[key];
+            }
+
+            // Set complex fields
+            if(data.tmj) {
+                const tmjSymptoms = document.querySelector(`input[name="tmj-symptoms-present"][value="${data.tmj.symptomsPresent || '9'}"]`);
+                if(tmjSymptoms) tmjSymptoms.checked = true;
+                document.getElementById('tmj-clicking').checked = data.tmj.clicking || false;
+                document.getElementById('tmj-tenderness').checked = data.tmj.tenderness || false;
+                document.getElementById('tmj-reduced-opening').checked = data.tmj.reducedOpening || false;
+            }
+            if(data.oralMucosa) {
+                 for(let i = 1; i <= 3; i++) {
+                    const conditionEl = document.getElementById(`oral-mucosa-condition-${i}`);
+                    if(conditionEl) {
+                        conditionEl.value = data.oralMucosa[`lesion${i}_condition`] || '0';
+                        conditionEl.dispatchEvent(new Event('change'));
+                    }
+                    const locationEl = document.getElementById(`oral-mucosa-location-${i}`);
+                    if(locationEl) locationEl.value = data.oralMucosa[`lesion${i}_location`] || '0';
+                    const otherEl = document.getElementById(`oral-mucosa-other-${i}`);
+                    if(otherEl) otherEl.value = data.oralMucosa[`lesion${i}_other`] || '';
+                }
+            }
+            if(data.enamel) {
+                document.querySelectorAll('#enamel select').forEach(sel => {
+                    if (sel.id !== 'dental-fluorosis' && data.enamel[sel.id] !== undefined) {
+                        sel.value = data.enamel[sel.id];
+                    }
+                });
+            }
+            if(data.cpiLoa) {
+                document.querySelectorAll('#cpi-loa input').forEach(input => {
+                    if(data.cpiLoa[input.id] !== undefined) input.value = data.cpiLoa[input.id];
+                });
+            }
+            if(data.dentition) {
+                document.querySelectorAll('#dentition input').forEach(input => {
+                    if(data.dentition[input.id] !== undefined) input.value = data.dentition[input.id];
+                });
+            }
+        }
+        
+        function clearForm() {
+             assessmentForm.reset();
+             document.querySelectorAll('.oral-mucosa-condition-select').forEach(sel => {
+                sel.dispatchEvent(new Event('change'));
+             });
+             showToast("Form cleared for next patient.", 2000);
+        }
+
+        function updateBatchCount() {
+            document.getElementById('batch-count').textContent = patientBatch.length;
+        }
+
+        // --- CSV Export Function ---
+        function exportToCsv() {
+            const dataToExport = patientBatch.length > 0 ? patientBatch : [getFormData()];
+            if (dataToExport.length === 1 && !dataToExport[0].general.idNumber) {
+                showToast("Cannot export. Please fill out the form or add patients to the batch.", 4000);
+                return;
+            }
+
+            const headers = [];
+            const rows = [];
+            const sanitizeCell = (cell) => {
+                let strCell = String(cell ?? '');
+                strCell = strCell.replace(/"/g, '""');
+                if (strCell.includes(',') || strCell.includes('"') || strCell.includes('\n')) {
+                    strCell = `"${strCell}"`;
+                }
+                return strCell;
+            };
+            
+            const firstPatient = dataToExport[0];
+            const headerOrder = ['general', 'extraOral', 'tmj', 'oralMucosa', 'enamel', 'cpiLoa', 'dentition', 'prosthesis', 'anomalies', 'summary'];
+            
+            headerOrder.forEach(sectionKey => {
+                if (firstPatient[sectionKey]) {
+                    Object.keys(firstPatient[sectionKey]).forEach(k => headers.push(k));
+                }
+            });
+            
+            rows.push(headers.join(","));
+
+            dataToExport.forEach(patientData => {
+                const row = [];
+                headers.forEach(header => {
+                    let value;
+                    for (const sectionKey of headerOrder) {
+                        if (patientData[sectionKey] && patientData[sectionKey][header] !== undefined) {
+                            value = patientData[sectionKey][header];
+                            break;
+                        }
+                    }
+                    row.push(sanitizeCell(value));
+                });
+                rows.push(row.join(","));
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + rows.join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            const today = new Date().toISOString().slice(0, 10);
+            link.setAttribute("download", `oral_health_batch_${today}.csv`);
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link);
+            showToast(`Exported ${dataToExport.length} patient(s) to CSV!`, 3000);
+        }
+
+        // --- Event Listeners ---
+        dobInput.addEventListener('change', () => {
+            if (dobInput.value) {
+                const birthDate = new Date(dobInput.value);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                ageInput.value = age;
+            } else {
+                ageInput.value = '';
+            }
+        });
+
+        document.querySelectorAll('.oral-mucosa-condition-select').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                const lesionNum = e.target.dataset.lesion;
+                const otherContainer = document.getElementById(`oral-mucosa-other-container-${lesionNum}`);
+                otherContainer.classList.toggle('hidden', e.target.value !== '8');
+            });
+        });
+        
+        document.getElementById('add-to-batch-btn').addEventListener('click', () => {
+            if (!document.getElementById('id-number').value) {
+                showToast("Please enter an Identification Number before adding to batch.", 3000);
+                return;
+            }
+            const patientData = getFormData();
+            patientBatch.push(patientData);
+            updateBatchCount();
+            clearForm();
+            showToast(`Patient #${patientData.general.idNumber} added to batch.`, 2000);
+        });
+
+        document.getElementById('clear-batch-btn').addEventListener('click', () => {
+            if (patientBatch.length > 0) {
+                patientBatch = [];
+                updateBatchCount();
+                showToast("Batch cleared.", 2000);
+            }
+        });
+        
+        document.getElementById('save-btn').addEventListener('click', () => {
+            localStorage.setItem('oralHealthAssessment', JSON.stringify(getFormData()));
+            showToast("Current form saved locally.", 3000);
+        });
+
+        document.getElementById('load-btn').addEventListener('click', () => {
+            const localData = localStorage.getItem('oralHealthAssessment');
+            if (localData) {
+                setFormData(JSON.parse(localData));
+                showToast("Last saved assessment loaded.", 3000);
+            } else {
+                showToast("No locally saved assessment found.", 3000);
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', clearForm);
+        document.getElementById('export-csv-btn').addEventListener('click', exportToCsv);
+
+        // --- Initial App Setup ---
+        document.getElementById('exam-date').valueAsDate = new Date();
+        createDentitionChart();
+        createEnamelHypoplasiaChart();
+        clearForm(); // Start with a clean slate
+
+    </script>
+</body>
+</html>
